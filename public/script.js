@@ -1,26 +1,38 @@
-async function sendMessage() {
-    const inputElement = document.getElementById('chat-input');
-    const outputElement = document.getElementById('chat-output');
+const form = document.querySelector('form');
+const input = document.querySelector('#message');
+const chatbox = document.querySelector('#chatbox');
 
-    const userMessage = inputElement.value;
-    if (!userMessage) return;
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const userMessage = input.value;
+  input.value = '';
 
-    // Display the user's message
-    outputElement.innerHTML += `<p><strong>You:</strong> ${userMessage}</p>`;
-    inputElement.value = '';
+  const response = await sendMessage(userMessage);
+  displayMessage('You', userMessage);
+  displayMessage('Bot', response);
+});
 
-    // Send the user's message to the backend
-    const response = await fetch('/api', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ prompt: userMessage })
+async function sendMessage(message) {
+  try {
+    const res = await fetch('/api', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ message: message })
     });
 
-    const data = await response.json();
+    const data = await res.json();
+    return data.reply;
+  } catch (error) {
+    console.error('Error:', error);
+    return 'Error: Unable to get response from server.';
+  }
+}
 
-    // Display the bot's response
-    const botMessage = data.choices && data.choices.length > 0 ? data.choices[0].text : 'Sorry, I didn\'t understand that.';
-    outputElement.innerHTML += `<p><strong>Bot:</strong> ${botMessage}</p>`;
+function displayMessage(sender, message) {
+  const messageElement = document.createElement('div');
+  messageElement.classList.add('message');
+  messageElement.innerHTML = `<strong>${sender}:</strong> ${message}`;
+  chatbox.appendChild(messageElement);
 }
