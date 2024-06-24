@@ -1,26 +1,26 @@
-// script.js
-document.addEventListener('DOMContentLoaded', function () {
-    const chatContainer = document.getElementById('chat-container');
-    const apiUrl = 'https://my-chatbot-backend.herokuapp.com/query'; // Replace with your Heroku app URL
+async function sendMessage() {
+    const inputElement = document.getElementById('chat-input');
+    const outputElement = document.getElementById('chat-output');
 
-    async function sendMessage(message) {
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ message }),
-        });
-        const data = await response.json();
-        appendMessage(data.reply);
-    }
+    const userMessage = inputElement.value;
+    if (!userMessage) return;
 
-    function appendMessage(message) {
-        const messageElement = document.createElement('div');
-        messageElement.innerText = message;
-        chatContainer.appendChild(messageElement);
-    }
+    // Display the user's message
+    outputElement.innerHTML += `<p><strong>You:</strong> ${userMessage}</p>`;
+    inputElement.value = '';
 
-    // Example: Triggering a message
-    sendMessage('Hello, ChatGPT!');
-});
+    // Send the user's message to the backend
+    const response = await fetch('/api', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ prompt: userMessage })
+    });
+
+    const data = await response.json();
+
+    // Display the bot's response
+    const botMessage = data.choices && data.choices.length > 0 ? data.choices[0].text : 'Sorry, I didn\'t understand that.';
+    outputElement.innerHTML += `<p><strong>Bot:</strong> ${botMessage}</p>`;
+}
