@@ -2,12 +2,12 @@
     "name": "my-chatbot-website",
     "version": "1.0.0",
     "description": "My Chatbot Website",
-    "main": "script.js",   
+    "main": "script.js",
     "scripts": {
-      "start": "node script.js"   
+        "start": "node script.js"
     },
     "dependencies": {
-      "express": "^4.17.2"
+        "cors": "^2.8.5",
+        "express": "^4.17.2"
     }
-  }
-  
+}
