@@ -1,0 +1,12 @@
+{
+    "name": "my-chatbot-website",
+    "version": "1.0.0",
+    "description": "My Chatbot Website",
+    "scripts": {
+      "start": "node script.js"
+    },
+    "dependencies": {
+      "express": "^4.17.2"
+    }
+  }
+  
