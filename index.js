@@ -4,15 +4,23 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Configure CORS to allow requests from your GitHub Pages URL
+// Configure CORS to allow requests from multiple origins
+const allowedOrigins = ['http://127.0.0.1:5500', 'https://hunter100102.github.io', 'https://my-chatbot-backend-58eec5b2de4a.herokuapp.com'];
+
 const corsOptions = {
-  origin: 'https://hunter100102.github.io', // Replace with your GitHub Pages URL
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   optionsSuccessStatus: 200
 };
 
 app.use(cors(corsOptions));
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Endpoint for ChatGPT queries
 app.post('/query', (req, res) => {
