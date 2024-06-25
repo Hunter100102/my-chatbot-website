@@ -1,17 +1,47 @@
+<!-- public/index.html -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chatbot</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Chatbot Demo</title>
 </head>
 <body>
-  <div id="chatbox"></div>
-  <form>
-    <input type="text" id="message" required>
-    <button type="submit">Send</button>
-  </form>
-  <script src="script.js"></script>
+  <h1>Chatbot Demo</h1>
+  <input type="file" id="audio-input" accept=".wav">
+  <button onclick="sendAudio()">Send Audio</button>
+  <div id="response"></div>
+  <script>
+    async function sendAudio() {
+      const fileInput = document.getElementById('audio-input');
+      const file = fileInput.files[0];
+
+      if (!file) {
+        alert('Please select an audio file.');
+        return;
+      }
+
+      try {
+        const formData = new FormData();
+        formData.append('audio', file);
+
+        const response = await fetch('http://localhost:3000/chat', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        document.getElementById('response').innerHTML = `<p>Response: ${data.response}</p>`;
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('response').innerHTML = `<p>Error: Failed to send audio</p>`;
+      }
+    }
+  </script>
 </body>
 </html>
